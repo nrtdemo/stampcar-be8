@@ -1,0 +1,10 @@
+# Python Virtual Enviroment
+/.venv
+
+# Log output
+log.html
+output.xml
+report.html
+
+# Screenshot
+**/*.png
