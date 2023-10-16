@@ -1,5 +1,5 @@
 // license - เลขทะเบียนรถ
-robot --variable license:6463 stampcar-be8-license.robot
+robot -d ./Logs/ --variable license:6463 stampcar-be8.robot
 
 // serial - เลขบัตรที่จอด
-robot --variable serial:0000 stampcar-be8-serial.robot
+robot -d ./Logs/ --variable serial:4240 stampcar-be8.robot
