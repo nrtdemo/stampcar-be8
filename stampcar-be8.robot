@@ -4,7 +4,7 @@ Library           SeleniumLibrary
 
 *** Variables ***
 ${LOGIN URL}			http://the9estamp.grandcanalland.com/web-estamp/login
-${BROWSER}				headlesschrome
+${BROWSER}				chrome
 ${username}				BE8
 ${password}				1234
 ${license}				
