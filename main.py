@@ -10,7 +10,7 @@ def stamp_license():
     """Return a friendly HTTP greeting."""
     license = request.args.get("v", default="")
     if license == "":
-        return "Invlid parameter"
+        return "Invalid parameter"
     subprocess.call([
         "robot", "-d", "./Logs",
         "--variable", f"license:{license}", "stampcar-be8.robot"
@@ -23,7 +23,7 @@ def stamp_serial():
     """Return a friendly HTTP greeting."""
     serial = request.args.get("v", default="")
     if serial == "":
-        return "Invlid parameter"
+        return "Invalid parameter"
     subprocess.call([
         "robot", "-d", "./Logs",
         "--variable", f"serial:{serial}", "stampcar-be8.robot"

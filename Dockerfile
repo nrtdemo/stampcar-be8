@@ -3,7 +3,6 @@
 FROM python:slim
 
 # Allow statements and log messages to immediately appear in the logs
-ENV PYTHONUNBUFFERED True
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 ENV PORT 8080
