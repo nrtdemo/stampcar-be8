@@ -1,0 +1,16 @@
+FROM ghcr.io/marketsquare/robotframework-browser/rfbrowser-stable:12.3.0
+
+WORKDIR /robot
+
+COPY . .
+
+USER root
+RUN chown -R pwuser:pwuser /robot
+
+USER pwuser
+RUN mkdir logs
+RUN pip3 install --user -r requirements.txt
+
+EXPOSE 8080
+
+ENTRYPOINT [ "python3", "-m", "robot", "--variable", "serial:4240", "stampcar-be8.robot" ]

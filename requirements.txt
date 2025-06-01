@@ -1,0 +1,12 @@
+# Web framework
+Flask==3.1.1
+
+# WSGI HTTP Server
+gunicorn==23.0.0
+
+# Test automation and web scraping
+selenium==4.33.0
+robotframework==7.3
+robotframework-seleniumlibrary==6.7.1
+webdriver-manager==4.0.2
+chromedriver-binary==139.0.7212.0.0
