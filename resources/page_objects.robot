@@ -41,13 +41,13 @@ Submit Login Form
 
 Verify Login Success
     [Documentation]    Verify successful login by checking navigation elements
-    Wait Until Element Is Visible    ${NAVIGATION.GOTO_PARKING_BUTTON}    timeout=30s
+    Wait Until Element Is Visible    ${NAVIGATION.GOTO_PARKING_BUTTON}    timeout=3s
 
 # Navigation Actions
 Navigate To Parking Section
     [Documentation]    Navigate to the parking section after login
     Click Element    ${NAVIGATION.GOTO_PARKING_BUTTON}
-    Wait Until Element Is Visible    ${SEARCH_PAGE.INPUT_FIELD}    timeout=30s
+    Wait Until Element Is Visible    ${SEARCH_PAGE.INPUT_FIELD}    timeout=3s
 
 # Search Page Actions
 Enter Search Term
@@ -60,12 +60,12 @@ Enter Search Term
 Search By License Plate
     [Documentation]    Perform search by license plate
     Click Element    ${SEARCH_PAGE.LICENSE_BUTTON}
-    Wait Until Element Is Visible    ${SEARCH_PAGE.SELECT_CAR_BUTTON}    timeout=30s
+    Wait Until Element Is Visible    ${SEARCH_PAGE.SELECT_CAR_BUTTON}    timeout=3s
 
 Search By Serial Number
     [Documentation]    Perform search by serial number
     Click Element    ${SEARCH_PAGE.SERIAL_BUTTON}
-    Wait Until Element Is Visible    ${SEARCH_PAGE.SELECT_CAR_BUTTON}    timeout=30s
+    Wait Until Element Is Visible    ${SEARCH_PAGE.SELECT_CAR_BUTTON}    timeout=3s
 
 Select Vehicle From Results
     [Documentation]    Select the vehicle from search results
@@ -93,4 +93,4 @@ Confirm E-Stamp Application
 
 Verify E-Stamp Success
     [Documentation]    Verify that e-stamp was applied successfully
-    Wait Until Element Is Visible    ${STAMP_PAGE.SUCCESS_MESSAGE}    timeout=30s
+    Wait Until Element Is Visible    ${STAMP_PAGE.SUCCESS_MESSAGE}    timeout=3s
