@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  robot-web-runner:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - FLASK_ENV=production
+      - DISPLAY=:99
+    volumes:
+      - ./Logs:/app/Logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - robot-network
+
+networks:
+  robot-network:
+    driver: bridge
+
+volumes:
+  logs-data:

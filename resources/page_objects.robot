@@ -10,7 +10,7 @@ ${LOGIN_PAGE.SUBMIT_BUTTON}         id:MainContent_MainLogin_LoginButton
 ${LOGIN_PAGE.SUCCESS_MESSAGE}       xpath://div[contains(@class,'success')]
 
 # Navigation Elements
-${NAVIGATION.GOTO_PARKING_BUTTON}   xpath://a[contains(@href,'parking') or contains(text(),'parking')]
+${NAVIGATION.GOTO_PARKING_BUTTON}   xpath://a[contains(@href,'Search.aspx') or contains(text(),'go to')]
 
 # Search Page Elements
 ${SEARCH_PAGE.INPUT_FIELD}          id:MainContent_keywordTextBox

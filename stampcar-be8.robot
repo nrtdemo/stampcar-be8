@@ -5,7 +5,7 @@ Library           Collections
 Library           OperatingSystem
 Resource          resources/page_objects.robot
 Resource          resources/config.robot
-Resource          resources/utilities.robot
+Resource          resources/docker_config.robot
 Test Setup        Setup Test Environment
 Test Teardown     Cleanup Test Environment
 Suite Setup       Create Output Directories
@@ -34,8 +34,7 @@ Generate Test Report
 # Application Flow Keywords
 Open Login Page
     [Documentation]    Navigate to the login page and verify it loads
-    Open Browser    ${CONFIG.LOGIN_URL}    ${CONFIG.BROWSER.DEFAULT}
-    Maximize Browser Window
+    Open Browser For Docker    ${CONFIG.LOGIN_URL}
     Wait Until Element Is Visible    ${LOGIN_PAGE.USERNAME_INPUT}    timeout=${CONFIG.TIMEOUT.EXPLICIT}
 
 Perform User Login

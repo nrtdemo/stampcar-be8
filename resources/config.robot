@@ -12,7 +12,7 @@ ${CONFIG.TIMEOUT.PAGE_LOAD}     60s
 # Browser Configuration
 ${CONFIG.BROWSER.DEFAULT}       chrome
 ${CONFIG.BROWSER.HEADLESS}      headlesschrome
-${CONFIG.BROWSER.OPTIONS}       --disable-web-security --disable-features=VizDisplayCompositor --no-sandbox
+${CONFIG.BROWSER.OPTIONS}       --disable-web-security --no-sandbox --disable-dev-shm-usage --disable-gpu --window-size=1920,1080
 
 # Test Data
 ${TEST_DATA.USERNAME}           BE8
