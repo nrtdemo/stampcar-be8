@@ -1,11 +1,12 @@
-# https://pypi.org/project/Flask
-# Flask==2.2.3
+# Web framework
+Flask==3.1.1
 
-# https://pypi.org/project/gunicorn
-# gunicorn==20.1.0
+# WSGI HTTP Server
+gunicorn==23.0.0
 
-selenium==4.18.1
-robotframework==6.1
-robotframework-seleniumlibrary==6.2.0
-webdriver-manager==4.0.1
-chromedriver-binary==124.0.6326.0.0
+# Test automation and web scraping
+selenium==4.33.0
+robotframework==7.3
+robotframework-seleniumlibrary==6.7.1
+webdriver-manager==4.0.2
+chromedriver-binary==139.0.7212.0.0
