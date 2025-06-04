@@ -3,6 +3,9 @@ Documentation     Stamp Car on THE 9 TOWER using SeleniumLibrary.
 Library           SeleniumLibrary
 Library           DateTime
 Library           OperatingSystem
+Suite Setup       Create Log Directory
+Suite Teardown    Log Suite Status
+Test Teardown     Run Keyword If Test Failed    Handle Test Failure
 
 *** Variables ***
 # Browser Configuration
@@ -17,6 +20,12 @@ ${CONFIG.USERNAME}              BE8
 ${CONFIG.PASSWORD}              1234
 ${PARAMETERS.LICENSE}           ${EMPTY}
 ${PARAMETERS.SERIAL}            ${EMPTY}
+${PARAMETERS.KEYWORD}           ${EMPTY}
+
+# Logging Configuration
+${LOG.DIRECTORY}                ./Logs
+${LOG.LEVEL}                    INFO
+${LOG.TIMESTAMP_FORMAT}         %Y%m%d_%H%M%S
 
 # Login Page Elements
 ${LOGIN_PAGE.USERNAME_INPUT}        id:MainContent_MainLogin_UserName
@@ -93,11 +102,43 @@ Submit E-Stamp Application
 Confirm E-Stamp Application
     [Documentation]    Final confirmation of e-stamp application
     Wait Until Element Is Visible    ${SEARCH_PAGE.CONFIRM_BUTTON}
-    
+    Click Element    ${SEARCH_PAGE.CONFIRM_BUTTON}
 
 Verify E-Stamp Success
     [Documentation]    Verify that e-stamp was applied successfully
     Wait Until Element Is Visible    ${STAMP_PAGE.SUCCESS_MESSAGE}    timeout=${CONFIG.BROWSER.TIMEOUT}
+
+# Missing Keywords
+Select Vehicle From Results
+    [Documentation]    Select the first vehicle from search results
+    Wait Until Element Is Visible    ${SEARCH_PAGE.SELECT_CAR_BUTTON}    timeout=${CONFIG.BROWSER.TIMEOUT}
+    Click Element    ${SEARCH_PAGE.SELECT_CAR_BUTTON}
+
+Confirm Vehicle Selection
+    [Documentation]    Confirm the selected vehicle
+    Wait Until Element Is Visible    ${SEARCH_PAGE.CONFIRM_BUTTON}    timeout=${CONFIG.BROWSER.TIMEOUT}
+    Click Element    ${SEARCH_PAGE.CONFIRM_BUTTON}
+
+# Error Handling and Logging Keywords
+Create Log Directory
+    [Documentation]    Create the log directory if it does not exist
+    Create Directory    ${LOG.DIRECTORY}
+    Log    Log directory created at: ${LOG.DIRECTORY}
+
+Handle Test Failure
+    [Documentation]    Handle test failure by capturing screenshot and logging error details
+    ${timestamp}=    Get Current Date    result_format=${LOG.TIMESTAMP_FORMAT}
+    ${error_screenshot}=    Set Variable    ${CAPTURE.DIRECTORY}/error_${timestamp}.png
+    Run Keyword And Ignore Error    Capture Page Screenshot    ${error_screenshot}
+    Log    Test failed at ${timestamp}    level=ERROR
+    Log    Error screenshot saved to: ${error_screenshot}    level=ERROR
+    Run Keyword And Ignore Error    Close Browser
+
+Log Suite Status
+    [Documentation]    Log suite completion status
+    ${timestamp}=    Get Current Date    result_format=${LOG.TIMESTAMP_FORMAT}
+    Log    Suite completed at: ${timestamp}
+    Run Keyword And Ignore Error    Close All Browsers
 
 # Screenshot Actions
 Capture Screen
