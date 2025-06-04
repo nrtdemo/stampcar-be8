@@ -12,7 +12,7 @@ Test Teardown     Run Keyword If Test Failed    Handle Test Failure
 ${CONFIG.BROWSER.URL}           http://the9estamp.grandcanalland.com/web-estamp/login
 ${CONFIG.BROWSER.DEFAULT}       chrome
 ${CONFIG.BROWSER.HEADLESS}      headlesschrome
-${CONFIG.BROWSER.OPTIONS}       
+${CONFIG.BROWSER.OPTIONS}       ${EMPTY}
 ${CONFIG.BROWSER.TIMEOUT}       3s
 
 # Test Data
@@ -20,7 +20,6 @@ ${CONFIG.USERNAME}              BE8
 ${CONFIG.PASSWORD}              1234
 ${PARAMETERS.LICENSE}           ${EMPTY}
 ${PARAMETERS.SERIAL}            ${EMPTY}
-${PARAMETERS.KEYWORD}           ${EMPTY}
 
 # Logging Configuration
 ${LOG.DIRECTORY}                ./Logs
@@ -77,7 +76,8 @@ Navigate To Parking Section
 # Search Page Actions
 Enter Search Term
     [Documentation]    Enter search term in the search field
-    [Arguments]    ${search_term}
+    [Arguments]    ${serial}    ${license}
+    ${search_term}=    Set Variable If    "${serial}" != ""    ${serial}    ${license}
     Wait Until Element Is Visible    ${SEARCH_PAGE.INPUT_FIELD}
     Clear Element Text    ${SEARCH_PAGE.INPUT_FIELD}
     Input Text    ${SEARCH_PAGE.INPUT_FIELD}    ${search_term}
@@ -163,7 +163,7 @@ Stamp Car on THE 9 TOWER
     Enter Login Credentials    ${CONFIG.USERNAME}    ${CONFIG.PASSWORD}
     Verify Login Success
     Navigate To Parking Section
-    Enter Search Term    ${PARAMETERS.KEYWORD}
+    Enter Search Term    ${PARAMETERS.LICENSE}      ${PARAMETERS.SERIAL}
     Select Vehicle From Results
     Confirm Vehicle Selection
     Select Free E-Stamp Option
