@@ -3,8 +3,9 @@ Documentation     Stamp Car on THE 9 TOWER using SeleniumLibrary.
 Library           SeleniumLibrary
 Library           DateTime
 Library           OperatingSystem
-Suite Setup       Create Log Directory
-Suite Teardown    Log Suite Status
+Resource          ../resources/docker_config.robot
+Suite Setup       Initialize Test Suite
+Suite Teardown    Cleanup Test Suite
 Test Teardown     Run Keyword If Test Failed    Handle Test Failure
 
 *** Variables ***
@@ -12,7 +13,7 @@ Test Teardown     Run Keyword If Test Failed    Handle Test Failure
 ${CONFIG.BROWSER.URL}           http://the9estamp.grandcanalland.com/web-estamp/login
 ${CONFIG.BROWSER.DEFAULT}       chrome
 ${CONFIG.BROWSER.HEADLESS}      headlesschrome
-${CONFIG.BROWSER.OPTIONS}       ${EMPTY}
+${CONFIG.BROWSER.OPTIONS}       add_argument("--no-sandbox");add_argument("--disable-dev-shm-usage");add_argument("--disable-gpu");add_argument("--remote-debugging-port=9222");add_argument("--disable-web-security");add_argument("--window-size=1920,1080");add_argument("--disable-features=VizDisplayCompositor")
 ${CONFIG.BROWSER.TIMEOUT}       3s
 
 # Test Data
@@ -120,10 +121,18 @@ Confirm Vehicle Selection
     Click Element    ${SEARCH_PAGE.CONFIRM_BUTTON}
 
 # Error Handling and Logging Keywords
+Initialize Test Suite
+    [Documentation]    Initialize test suite with logging and environment setup
+    Create Log Directory
+    Detect Environment
+    Log    Test suite initialized for environment: Docker=${ENV.docker}, Local=${ENV.local}
+
 Create Log Directory
     [Documentation]    Create the log directory if it does not exist
     Create Directory    ${LOG.DIRECTORY}
+    Create Directory    ${CAPTURE.DIRECTORY}
     Log    Log directory created at: ${LOG.DIRECTORY}
+    Log    Capture directory created at: ${CAPTURE.DIRECTORY}
 
 Handle Test Failure
     [Documentation]    Handle test failure by capturing screenshot and logging error details
@@ -132,13 +141,13 @@ Handle Test Failure
     Run Keyword And Ignore Error    Capture Page Screenshot    ${error_screenshot}
     Log    Test failed at ${timestamp}    level=ERROR
     Log    Error screenshot saved to: ${error_screenshot}    level=ERROR
-    Run Keyword And Ignore Error    Close Browser
+    Cleanup Test Browser
 
-Log Suite Status
-    [Documentation]    Log suite completion status
+Cleanup Test Suite
+    [Documentation]    Clean up test suite and log completion status
     ${timestamp}=    Get Current Date    result_format=${LOG.TIMESTAMP_FORMAT}
     Log    Suite completed at: ${timestamp}
-    Run Keyword And Ignore Error    Close All Browsers
+    Cleanup Test Browser
 
 # Screenshot Actions
 Capture Screen
@@ -158,8 +167,7 @@ Capture Screen
 *** Test Cases ***
 Stamp Car on THE 9 TOWER
     [Documentation]    Test case to stamp a car on THE 9 TOWER using SeleniumLibrary.
-    Open Browser    ${CONFIG.BROWSER.URL}    ${CONFIG.BROWSER.DEFAULT}    options=${CONFIG.BROWSER.OPTIONS}
-    Maximize Browser Window
+    Setup Test Browser
     Enter Login Credentials    ${CONFIG.USERNAME}    ${CONFIG.PASSWORD}
     Verify Login Success
     Navigate To Parking Section
@@ -171,4 +179,4 @@ Stamp Car on THE 9 TOWER
     Confirm E-Stamp Application
     Verify E-Stamp Success
     Capture Screen
-    Close Browser
+    Cleanup Test Browser

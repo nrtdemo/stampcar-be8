@@ -1,29 +1,26 @@
 version: '3.8'
 
 services:
-  robot-web-runner:
-    build: .
+  robot-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: stampcar-robot-tests
+    volumes:
+      # Mount logs directory to persist test results
+      - ./Logs:/app/Logs
+      # Mount robots directory for easy test file access
+      - ./robots:/app/robots
+    environment:
+      - DISPLAY=:99
+      - PYTHONUNBUFFERED=1
+    # Optional: expose port if web interface is needed
     ports:
       - "8080:8080"
-    environment:
-      - PORT=8080
-      - FLASK_ENV=production
-      - DISPLAY=:99
-    volumes:
-      - ./Logs:/app/Logs
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    networks:
-      - robot-network
-
-networks:
-  robot-network:
-    driver: bridge
-
-volumes:
-  logs-data:
+    # Add shared memory size for Chrome stability
+    shm_size: 2gb
+    # Security options for Chrome in container
+    security_opt:
+      - seccomp:unconfined
+    # Override default command if needed
+    # command: ["python3", "run_robot.py", "--variable", "serial:4240"]
