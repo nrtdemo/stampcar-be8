@@ -1,156 +1,133 @@
 *** Settings ***
-Documentation     Automated stamp car testing for THE 9 TOWER e-stamp system
+Documentation     Stamp Car on THE 9 TOWER using SeleniumLibrary.
 Library           SeleniumLibrary
-Library           Collections
+Library           DateTime
 Library           OperatingSystem
-Resource          resources/page_objects.robot
-Resource          resources/config.robot
-Resource          resources/docker_config.robot
-Test Setup        Setup Test Environment
-Test Teardown     Cleanup Test Environment
-Suite Setup       Create Output Directories
-Suite Teardown    Generate Test Report
 
 *** Variables ***
-# Test Instance Variables (set during test execution)
-${LICENSE_PLATE}                ${EMPTY}
-${SERIAL_NUMBER}                ${EMPTY}
+# Browser Configuration
+${CONFIG.BROWSER.URL}           http://the9estamp.grandcanalland.com/web-estamp/login
+${CONFIG.BROWSER.DEFAULT}       chrome
+${CONFIG.BROWSER.HEADLESS}      headlesschrome
+${CONFIG.BROWSER.OPTIONS}       
+${CONFIG.BROWSER.TIMEOUT}       3s
+
+# Test Data
+${CONFIG.USERNAME}              BE8
+${CONFIG.PASSWORD}              1234
+${PARAMETERS.LICENSE}           ${EMPTY}
+${PARAMETERS.SERIAL}            ${EMPTY}
+
+# Login Page Elements
+${LOGIN_PAGE.USERNAME_INPUT}        id:MainContent_MainLogin_UserName
+${LOGIN_PAGE.PASSWORD_INPUT}        id:MainContent_MainLogin_Password
+${LOGIN_PAGE.SUBMIT_BUTTON}         id:MainContent_MainLogin_LoginButton
+${LOGIN_PAGE.SUCCESS_MESSAGE}       xpath://div[contains(@class,'success')]
+
+# Navigation Elements
+${NAVIGATION.GOTO_PARKING_BUTTON}   xpath://a[contains(@href,'Search.aspx') or contains(text(),'Go to')]
+
+# Search Page Elements
+${SEARCH_PAGE.INPUT_FIELD}          id:MainContent_keywordTextBox
+${SEARCH_PAGE.LICENSE_BUTTON}       id:MainContent_searchLicensneButton
+${SEARCH_PAGE.SERIAL_BUTTON}        id:MainContent_searchSerialButton
+${SEARCH_PAGE.SELECT_CAR_BUTTON}    id:MainContent_ParkingDetail_LinkButton1_0
+${SEARCH_PAGE.CONFIRM_BUTTON}       id:MainContent_doneButton1
+
+# E-Stamp Page Elements
+${STAMP_PAGE.DROPDOWN}              id:MainContent_couponDropDown
+${STAMP_PAGE.FREE_OPTION}           xpath://select[@id='MainContent_couponDropDown']/option[2]
+${STAMP_PAGE.SUBMIT_BUTTON}         id:MainContent_submitButton
+${STAMP_PAGE.SUCCESS_MESSAGE}       xpath://div[contains(@class,'success')]
+${SEARCH_PAGE.NO_RESULTS_MESSAGE}   xpath://div[contains(text(),'No results found')]
+
+# Screenshot Configuration
+${CAPTURE.DIRECTORY}                ./Capture
+${CAPTURE.TIMESTAMP_FORMAT}         %Y%m%d_%H%M%S
 
 *** Keywords ***
-# Setup and Teardown Keywords
-Setup Test Environment
-    [Documentation]    Initialize browser and set timeouts
-    Set Selenium Implicit Wait    ${CONFIG.TIMEOUT.IMPLICIT}
-    Set Selenium Timeout          ${CONFIG.TIMEOUT.EXPLICIT}
+# Login Page Actions
+Enter Login Credentials
+    [Documentation]    Enter username and password on login page
+    [Arguments]    ${username}    ${password}
+    Wait Until Element Is Visible    ${LOGIN_PAGE.USERNAME_INPUT}
+    Input Text    ${LOGIN_PAGE.USERNAME_INPUT}    ${username}
+    Input Text    ${LOGIN_PAGE.PASSWORD_INPUT}    ${password}
+    Click Element    ${LOGIN_PAGE.SUBMIT_BUTTON}
 
-Cleanup Test Environment
-    [Documentation]    Close browser and cleanup resources
-    Close All Browsers
+Verify Login Success
+    [Documentation]    Verify successful login by checking navigation elements
+    Wait Until Element Is Visible    ${NAVIGATION.GOTO_PARKING_BUTTON}    timeout=${CONFIG.BROWSER.TIMEOUT}
 
-Generate Test Report
-    [Documentation]    Generate final test execution report
-    Log    Test execution completed. Check reports in ${CONFIG.REPORTS_DIR}
+# Navigation Actions
+Navigate To Parking Section
+    [Documentation]    Navigate to the parking section after login
+    Click Element      ${NAVIGATION.GOTO_PARKING_BUTTON}
+    Wait Until Element Is Visible    ${SEARCH_PAGE.INPUT_FIELD}    timeout=${CONFIG.BROWSER.TIMEOUT}
 
-# Application Flow Keywords
-Open Login Page
-    [Documentation]    Navigate to the login page and verify it loads
-    Open Browser For Docker    ${CONFIG.LOGIN_URL}
-    Wait Until Element Is Visible    ${LOGIN_PAGE.USERNAME_INPUT}    timeout=${CONFIG.TIMEOUT.EXPLICIT}
+# Search Page Actions
+Enter Search Term
+    [Documentation]    Enter search term in the search field
+    [Arguments]    ${search_term}
+    Wait Until Element Is Visible    ${SEARCH_PAGE.INPUT_FIELD}
+    Clear Element Text    ${SEARCH_PAGE.INPUT_FIELD}
+    Input Text    ${SEARCH_PAGE.INPUT_FIELD}    ${search_term}
+    IF	"${PARAMETERS.LICENSE}" != ""
+        Click Element    ${SEARCH_PAGE.LICENSE_BUTTON}
+    ELSE
+        Click Element    ${SEARCH_PAGE.SERIAL_BUTTON}
+    END
+    Wait Until Element Is Visible    ${SEARCH_PAGE.SELECT_CAR_BUTTON}    timeout=${CONFIG.BROWSER.TIMEOUT}
+    Click Element    ${SEARCH_PAGE.SELECT_CAR_BUTTON}
 
-Perform User Login
-    [Documentation]    Complete login process with credentials
-    [Arguments]    ${username}=${TEST_DATA.USERNAME}    ${password}=${TEST_DATA.PASSWORD}
-    Enter Login Credentials    ${username}    ${password}
-    Submit Login Form
+# E-Stamp Page Actions
+Select Free E-Stamp Option
+    [Documentation]    Select the free e-stamp option from dropdown
+    Wait Until Element Is Visible    ${STAMP_PAGE.DROPDOWN}
+    Click Element    ${STAMP_PAGE.FREE_OPTION}
+
+Submit E-Stamp Application
+    [Documentation]    Submit the e-stamp application
+    Click Element    ${STAMP_PAGE.SUBMIT_BUTTON}
+
+Confirm E-Stamp Application
+    [Documentation]    Final confirmation of e-stamp application
+    Wait Until Element Is Visible    ${SEARCH_PAGE.CONFIRM_BUTTON}
+    
+
+Verify E-Stamp Success
+    [Documentation]    Verify that e-stamp was applied successfully
+    Wait Until Element Is Visible    ${STAMP_PAGE.SUCCESS_MESSAGE}    timeout=${CONFIG.BROWSER.TIMEOUT}
+
+# Screenshot Actions
+Capture Screen
+    [Documentation]    Capture screenshot with optional custom filename
+    [Arguments]    ${filename}=${EMPTY}    ${directory}=${CAPTURE.DIRECTORY}
+    ${timestamp}=    Get Current Date    result_format=${CAPTURE.TIMESTAMP_FORMAT}
+    IF    "${filename}" == "${EMPTY}"
+        ${screenshot_name}=    Set Variable    screenshot_${timestamp}
+    ELSE
+        ${screenshot_name}=    Set Variable    ${filename}_${timestamp}
+    END
+    Create Directory    ${directory}
+    ${screenshot_path}=    Set Variable    ${directory}/${screenshot_name}.png
+    Capture Page Screenshot    ${screenshot_path}
+    Log    Screenshot saved to: ${screenshot_path}
+
+*** Test Cases ***
+Stamp Car on THE 9 TOWER
+    [Documentation]    Test case to stamp a car on THE 9 TOWER using SeleniumLibrary.
+    Open Browser    ${CONFIG.BROWSER.URL}    ${CONFIG.BROWSER.DEFAULT}    options=${CONFIG.BROWSER.OPTIONS}
+    Maximize Browser Window
+    Enter Login Credentials    ${CONFIG.USERNAME}    ${CONFIG.PASSWORD}
     Verify Login Success
     Navigate To Parking Section
-
-Search Vehicle By License Plate
-    [Documentation]    Search for a vehicle using license plate number
-    [Arguments]    ${license_plate}
-    Enter Search Term    ${license_plate}
-    Search By License Plate
-
-Search Vehicle By Serial Number
-    [Documentation]    Search for a vehicle using serial number
-    [Arguments]    ${serial_number}
-    Enter Search Term    ${serial_number}
-    Search By Serial Number
-
-Process Vehicle Selection
-    [Documentation]    Select and confirm the found vehicle
+    Enter Search Term    ${PARAMETERS.KEYWORD}
     Select Vehicle From Results
     Confirm Vehicle Selection
-
-Apply E-Stamp To Vehicle
-    [Documentation]    Apply free e-stamp to the selected vehicle
     Select Free E-Stamp Option
     Submit E-Stamp Application
     Confirm E-Stamp Application
-
-Capture Process Verification
-    [Documentation]    Take screenshot for process verification
-    [Arguments]    ${identifier}
-    ${screenshot_path}=    Set Variable    ${CONFIG.SCREENSHOT_DIR}/${identifier}
-    Create Directory    ${screenshot_path}
-    
-    # Search again to verify the process
-    Enter Search Term    ${identifier}
-    Run Keyword If    "${LICENSE_PLATE}" != "${EMPTY}"    Search By License Plate
-    ...    ELSE    Search By Serial Number
-    
-    Sleep    2s    # Wait for page to stabilize
-    Capture Page Screenshot    ${screenshot_path}/process_verification.png
-    Log    Screenshot saved: ${screenshot_path}/process_verification.png
-
-# High-Level Business Keywords
-Execute Vehicle Search
-    [Documentation]    Search for vehicle using either license plate or serial number
-    Run Keyword If    "${LICENSE_PLATE}" != "${EMPTY}"    Search Vehicle By License Plate    ${LICENSE_PLATE}
-    ...    ELSE IF    "${SERIAL_NUMBER}" != "${EMPTY}"    Search Vehicle By Serial Number    ${SERIAL_NUMBER}
-    ...    ELSE    Fail    ${ERRORS.VEHICLE_NOT_FOUND}: Either LICENSE_PLATE or SERIAL_NUMBER must be provided
-
-Complete E-Stamp Process
-    [Documentation]    Execute the complete e-stamp application process
-    Execute Vehicle Search
-    Process Vehicle Selection
-    Apply E-Stamp To Vehicle
-    
-    # Determine identifier for screenshot
-    ${identifier}=    Set Variable If    "${LICENSE_PLATE}" != "${EMPTY}"    ${LICENSE_PLATE}    ${SERIAL_NUMBER}
-    Capture Process Verification    ${identifier}
-    
-    Log    E-stamp process completed successfully for vehicle: ${identifier}
-
-*** Test Cases ***
-Validate E-Stamp Process With License Plate
-    [Documentation]    Test e-stamp process using license plate identification
-    [Tags]    smoke    license_plate    critical
-    [Setup]    Set Test Variable    ${LICENSE_PLATE}    1405
-    Open Login Page
-    Perform User Login
-    Complete E-Stamp Process
-
-Validate E-Stamp Process With Serial Number
-    [Documentation]    Test e-stamp process using serial number identification
-    [Tags]    smoke    serial_number    critical
-    [Setup]    Set Test Variable    ${SERIAL_NUMBER}    2247
-    Open Login Page
-    Perform User Login
-    Complete E-Stamp Process
-
-Data Driven E-Stamp Testing
-    [Documentation]    Comprehensive testing with multiple vehicles using template
-    [Tags]    regression    data_driven
-    [Template]    Execute E-Stamp Workflow
-    # Test data: license_plate | serial_number | description
-    1405        ${EMPTY}      License plate test - Vehicle 1405
-    ${EMPTY}    2247          Serial number test - Vehicle 2247
-    5276        ${EMPTY}      License plate test - Vehicle 5276
-    ${EMPTY}    6463          Serial number test - Vehicle 6463
-
-Negative Test - Invalid Vehicle Search
-    [Documentation]    Test behavior with invalid vehicle identifiers
-    [Tags]    negative    error_handling
-    [Setup]    Set Test Variable    ${LICENSE_PLATE}    INVALID999
-    Open Login Page
-    Perform User Login
-    Run Keyword And Expect Error    *    Execute Vehicle Search
-
-Login Validation Test
-    [Documentation]    Validate login functionality with correct credentials
-    [Tags]    smoke    login
-    Open Login Page
-    Perform User Login
-    [Teardown]    Log    Login validation completed successfully
-
-*** Keywords ***
-Execute E-Stamp Workflow
-    [Documentation]    Template keyword for data-driven testing
-    [Arguments]    ${license_plate}    ${serial_number}    ${description}
-    Log    Executing: ${description}
-    Set Test Variable    ${LICENSE_PLATE}    ${license_plate}
-    Set Test Variable    ${SERIAL_NUMBER}    ${serial_number}
-    Open Login Page
-    Perform User Login
-    Complete E-Stamp Process
+    Verify E-Stamp Success
+    Capture Screen
+    Close Browser
