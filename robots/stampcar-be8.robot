@@ -4,8 +4,8 @@ Library           SeleniumLibrary
 Library           DateTime
 Library           OperatingSystem
 Resource          ../resources/docker_config.robot
-Suite Setup       Initialize Test Suite
-Suite Teardown    Cleanup Test Suite
+Suite Setup       Create Log Directory
+Suite Teardown    Log Suite Status
 Test Teardown     Run Keyword If Test Failed    Handle Test Failure
 
 *** Variables ***
@@ -129,10 +129,8 @@ Initialize Test Suite
 
 Create Log Directory
     [Documentation]    Create the log directory if it does not exist
-    Create Directory    ${LOG.DIRECTORY}
-    Create Directory    ${CAPTURE.DIRECTORY}
-    Log    Log directory created at: ${LOG.DIRECTORY}
-    Log    Capture directory created at: ${CAPTURE.DIRECTORY}
+    Create Directory    ${LOG.DIRECTORY}/${CAPTURE.DIRECTORY}
+    Log    Log directory created at: ${LOG.DIRECTORY}/${CAPTURE.DIRECTORY}
 
 Handle Test Failure
     [Documentation]    Handle test failure by capturing screenshot and logging error details
@@ -141,13 +139,13 @@ Handle Test Failure
     Run Keyword And Ignore Error    Capture Page Screenshot    ${error_screenshot}
     Log    Test failed at ${timestamp}    level=ERROR
     Log    Error screenshot saved to: ${error_screenshot}    level=ERROR
-    Cleanup Test Browser
+    Run Keyword And Ignore Error    Close Browser
 
-Cleanup Test Suite
-    [Documentation]    Clean up test suite and log completion status
+Log Suite Status
+    [Documentation]    Log suite completion status
     ${timestamp}=    Get Current Date    result_format=${LOG.TIMESTAMP_FORMAT}
     Log    Suite completed at: ${timestamp}
-    Cleanup Test Browser
+    Run Keyword And Ignore Error    Close All Browsers
 
 # Screenshot Actions
 Capture Screen
@@ -167,7 +165,8 @@ Capture Screen
 *** Test Cases ***
 Stamp Car on THE 9 TOWER
     [Documentation]    Test case to stamp a car on THE 9 TOWER using SeleniumLibrary.
-    Setup Test Browser
+    Open Browser    ${CONFIG.BROWSER.URL}    ${CONFIG.BROWSER.DEFAULT}    options=${CONFIG.BROWSER.OPTIONS}
+    Maximize Browser Window
     Enter Login Credentials    ${CONFIG.USERNAME}    ${CONFIG.PASSWORD}
     Verify Login Success
     Navigate To Parking Section
@@ -179,4 +178,4 @@ Stamp Car on THE 9 TOWER
     Confirm E-Stamp Application
     Verify E-Stamp Success
     Capture Screen
-    Cleanup Test Browser
+    Close Browser
