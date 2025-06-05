@@ -29,16 +29,6 @@ def favicon():
     )
 
 
-@app.route("/health")
-def health():
-    """Health check endpoint."""
-    return jsonify({
-        "status": "healthy",
-        "timestamp": datetime.now().isoformat(),
-        "test_running": test_status["running"]
-    })
-
-
 @app.route("/")
 def index():
     """Main page with Robot Framework runner interface."""
@@ -147,7 +137,7 @@ def get_latest_screenshot():
         all_screenshots = []
         
         # Get selenium screenshots from Logs directory
-        selenium_files = glob.glob("./Logs/selenium-screenshot-*.png")
+        selenium_files = glob.glob("./Logs/Capture/screenshot_*.png")
         for file_path in selenium_files:
             filename = os.path.basename(file_path)
             all_screenshots.append(
@@ -194,7 +184,7 @@ def get_latest_screenshot():
 def get_selenium_screenshot(filename):
     """Serve selenium screenshot images."""
     try:
-        return send_from_directory("./Logs", filename)
+        return send_from_directory("./Logs/Capture/", filename)
     except FileNotFoundError:
         return "Screenshot not found", 404
 
@@ -203,7 +193,7 @@ def get_selenium_screenshot(filename):
 def get_error_screenshot(filename):
     """Serve error screenshot images."""
     try:
-        return send_from_directory("./Logs/Capture", filename)
+        return send_from_directory("./Logs/Capture/", filename)
     except FileNotFoundError:
         return "Screenshot not found", 404
 

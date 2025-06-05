@@ -20,20 +20,20 @@ check_docker() {
 # Function to cleanup existing containers
 cleanup() {
     echo "🧹 Cleaning up existing containers..."
-    docker-compose -f docker-compose.yml down --remove-orphans || true
+    docker-compose -f docker-compose.selenium.yml down --remove-orphans || true
 }
 
 # Function to build and start services
 start_services() {
     echo "🏗️  Building and starting services..."
-    docker-compose -f docker-compose.yml up --build -d
+    docker-compose -f docker-compose.selenium.yml up --build -d
     
     echo "⏳ Waiting for services to be ready..."
     sleep 10
     
     # Check if services are running
     echo "📊 Service Status:"
-    docker-compose -f docker-compose.yml ps
+    docker-compose -f docker-compose.selenium.yml ps
 }
 
 # Function to show access information
@@ -47,10 +47,10 @@ show_access_info() {
     echo "🦊 Firefox VNC (Debug):   http://localhost:7901 (password: secret)"
     echo ""
     echo "📝 To view logs:"
-    echo "   docker-compose -f docker-compose.yml logs -f [service-name]"
+    echo "   docker-compose -f docker-compose.selenium.yml logs -f [service-name]"
     echo ""
     echo "🛑 To stop all services:"
-    echo "   docker-compose -f docker-compose.yml down"
+    echo "   docker-compose -f docker-compose.selenium.yml down"
     echo ""
 }
 
@@ -95,7 +95,7 @@ main() {
             ;;
         "stop")
             echo "🛑 Stopping all services..."
-            docker-compose -f docker-compose.yml down
+            docker-compose -f docker-compose.selenium.yml down
             echo "✅ All services stopped"
             ;;
         "restart")
@@ -105,14 +105,14 @@ main() {
             $0 start
             ;;
         "logs")
-            docker-compose -f docker-compose.yml logs -f
+            docker-compose -f docker-compose.selenium.yml logs -f
             ;;
         "status")
-            docker-compose -f docker-compose.yml ps
+            docker-compose -f docker-compose.selenium.yml ps
             ;;
         "build")
             echo "🏗️  Building images..."
-            docker-compose -f docker-compose.yml build
+            docker-compose -f docker-compose.selenium.yml build
             ;;
         *)
             echo "Usage: $0 {start|stop|restart|logs|status|build}"

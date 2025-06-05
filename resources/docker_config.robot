@@ -122,22 +122,6 @@ Check Selenium Grid Status
     ${response}=    Run Process    curl    -f    ${SELENIUM_HUB_URL}/status
     Should Be Equal As Integers    ${response.rc}    0
 
-Setup Test Browser
-    [Documentation]    Universal browser setup for all environments
-    ${browser_name}=    Get Browser Name
-    ${browser_options}=    Get Browser Options
-    ${url}=    Set Variable    http://the9estamp.grandcanalland.com/web-estamp/login
-    
-    Log    Opening browser: ${browser_name} with options: ${browser_options}
-    Open Browser    ${url}    ${browser_name}    options=${browser_options}
-    Set Window Size    1920    1080
-    
-    # Additional setup for Docker environment
-    IF    ${ENV.docker}
-        Set Selenium Timeout    10s
-        Set Selenium Implicit Wait    5s
-    END
-
 Cleanup Test Browser
     [Documentation]    Clean browser session and close all browsers
     Run Keyword And Ignore Error    Close Browser

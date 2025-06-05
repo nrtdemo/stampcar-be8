@@ -51,16 +51,16 @@ If you prefer to use Docker Compose directly:
 
 ```bash
 # Start all services
-docker-compose -f docker-compose.yml up -d
+docker-compose -f docker-compose.selenium.yml up -d
 
 # View logs
-docker-compose -f docker-compose.yml logs -f
+docker-compose -f docker-compose.selenium.yml logs -f
 
 # Stop all services
-docker-compose -f docker-compose.yml down
+docker-compose -f docker-compose.selenium.yml down
 
 # Rebuild and start
-docker-compose -f docker-compose.yml up --build -d
+docker-compose -f docker-compose.selenium.yml up --build -d
 ```
 
 ## 🧪 Running Tests
@@ -97,16 +97,16 @@ This is especially useful for debugging test failures or understanding what's ha
 ## 📁 File Structure
 
 ```
-├── docker-compose.yml           # Main compose file for Selenium Grid setup
-├── Dockerfile                   # Flask app dockerfile optimized for Selenium
+├── docker-compose.selenium.yml  # Main compose file for Selenium Grid setup
+├── Dockerfile.selenium          # Flask app dockerfile optimized for Selenium
 ├── run-selenium-grid.sh         # Convenience script to manage the environment
 ├── main.py                      # Flask web application
 ├── robots/
-│   └── stampcar-be8.robot       # Main Robot Framework test file
+│   └── stampcar-be8.robot      # Main Robot Framework test file
 ├── resources/
 │   └── docker_config.robot     # Environment-specific configurations
 ├── Logs/                        # Test execution logs and screenshots
-└── test-results/               # Additional test results
+└── test-results/          ****     # Additional test results
 ```
 
 ## 🔧 Configuration
@@ -139,7 +139,7 @@ docker info
 lsof -i :4444 -i :8080 -i :7900 -i :7901
 
 # View detailed logs
-docker-compose -f docker-compose.yml logs
+docker-compose -f docker-compose.selenium.yml logs
 ```
 
 ### Tests failing to connect to Selenium Grid
@@ -154,17 +154,17 @@ curl http://localhost:4444/grid/api/hub/status
 ### Browser sessions not starting
 ```bash
 # Check browser node logs
-docker-compose -f docker-compose.yml logs selenium-node-chrome
-docker-compose -f docker-compose.yml logs selenium-node-firefox
+docker-compose -f docker-compose.selenium.yml logs selenium-node-chrome
+docker-compose -f docker-compose.selenium.yml logs selenium-node-firefox
 
 # Restart specific services
-docker-compose -f docker-compose.yml restart selenium-node-chrome
+docker-compose -f docker-compose.selenium.yml restart selenium-node-chrome
 ```
 
 ### Flask app not accessible
 ```bash
 # Check Flask app logs
-docker-compose -f docker-compose.yml logs flask-app
+docker-compose -f docker-compose.selenium.yml logs flask-app
 
 # Test Flask app health
 curl http://localhost:8080/
@@ -183,7 +183,7 @@ curl http://localhost:8080/
 
 ### Logs
 - All logs are available via: `./run-selenium-grid.sh logs`
-- Individual service logs: `docker-compose -f docker-compose.yml logs [service-name]`
+- Individual service logs: `docker-compose -f docker-compose.selenium.yml logs [service-name]`
 
 ## 🔒 Security Notes
 

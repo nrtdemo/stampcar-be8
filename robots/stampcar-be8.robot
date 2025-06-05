@@ -44,9 +44,9 @@ ${SEARCH_PAGE.SELECT_CAR_BUTTON}    id:MainContent_ParkingDetail_LinkButton1_0
 ${SEARCH_PAGE.CONFIRM_BUTTON}       id:MainContent_doneButton1
 
 # E-Stamp Page Elements
-${STAMP_PAGE.DROPDOWN}              id:MainContent_couponDropDown
-${STAMP_PAGE.FREE_OPTION}           xpath://select[@id='MainContent_couponDropDown']/option[2]
-${STAMP_PAGE.SUBMIT_BUTTON}         id:MainContent_submitButton
+${STAMP_PAGE.DROPDOWN}              //*[@id="MainContent_couponDropDown"]
+${STAMP_PAGE.FREE_OPTION}           //*[@id="MainContent_couponDropDown"]/option[2]
+${STAMP_PAGE.SUBMIT_BUTTON}         //*[@id="MainContent_submitButton"]
 ${STAMP_PAGE.SUCCESS_MESSAGE}       xpath://div[contains(@class,'success')]
 ${SEARCH_PAGE.NO_RESULTS_MESSAGE}   xpath://div[contains(text(),'No results found')]
 
@@ -87,27 +87,29 @@ Enter Search Term
     ELSE
         Click Element    ${SEARCH_PAGE.SERIAL_BUTTON}
     END
+
+Select Car Button
+    [Documentation]    Click select car
     Wait Until Element Is Visible    ${SEARCH_PAGE.SELECT_CAR_BUTTON}    timeout=${CONFIG.BROWSER.TIMEOUT}
     Click Element    ${SEARCH_PAGE.SELECT_CAR_BUTTON}
 
 # E-Stamp Page Actions
 Select Free E-Stamp Option
     [Documentation]    Select the free e-stamp option from dropdown
-    Wait Until Element Is Visible    ${STAMP_PAGE.DROPDOWN}
-    Click Element    ${STAMP_PAGE.FREE_OPTION}
+    Wait Until Element Is Visible    ${STAMP_PAGE.DROPDOWN}    timeout=${CONFIG.BROWSER.TIMEOUT}
+    Click Element   ${STAMP_PAGE.DROPDOWN}
+    Wait Until Element Is Visible    ${STAMP_PAGE.FREE_OPTION}    timeout=${CONFIG.BROWSER.TIMEOUT}
+    Click Element   ${STAMP_PAGE.FREE_OPTION}
 
 Submit E-Stamp Application
     [Documentation]    Submit the e-stamp application
+    Wait Until Element Is Visible    ${STAMP_PAGE.SUBMIT_BUTTON}    timeout=${CONFIG.BROWSER.TIMEOUT}
     Click Element    ${STAMP_PAGE.SUBMIT_BUTTON}
 
 Confirm E-Stamp Application
     [Documentation]    Final confirmation of e-stamp application
     Wait Until Element Is Visible    ${SEARCH_PAGE.CONFIRM_BUTTON}
     Click Element    ${SEARCH_PAGE.CONFIRM_BUTTON}
-
-Verify E-Stamp Success
-    [Documentation]    Verify that e-stamp was applied successfully
-    Wait Until Element Is Visible    ${STAMP_PAGE.SUCCESS_MESSAGE}    timeout=${CONFIG.BROWSER.TIMEOUT}
 
 # Missing Keywords
 Select Vehicle From Results
@@ -188,11 +190,11 @@ Stamp Car on THE 9 TOWER
     Verify Login Success
     Navigate To Parking Section
     Enter Search Term    ${PARAMETERS.LICENSE}      ${PARAMETERS.SERIAL}
-    Select Vehicle From Results
-    Confirm Vehicle Selection
+    Select Car Button
+    Confirm E-Stamp Application
     Select Free E-Stamp Option
     Submit E-Stamp Application
     Confirm E-Stamp Application
-    Verify E-Stamp Success
+    Enter Search Term    ${PARAMETERS.LICENSE}      ${PARAMETERS.SERIAL}
     Capture Screen
     Close Browser
