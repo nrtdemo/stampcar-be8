@@ -29,6 +29,16 @@ def favicon():
     )
 
 
+@app.route("/health")
+def health():
+    """Health check endpoint."""
+    return jsonify({
+        "status": "healthy",
+        "timestamp": datetime.now().isoformat(),
+        "test_running": test_status["running"]
+    })
+
+
 @app.route("/")
 def index():
     """Main page with Robot Framework runner interface."""

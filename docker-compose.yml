@@ -1,26 +1,50 @@
-version: '3.8'
-
 services:
-  robot-tests:
+  # Selenium Standalone Chrome (ARM64 compatible)
+  selenium-chrome:
+    image: seleniarm/standalone-chromium:latest
+    container_name: selenium-chrome
+    ports:
+      - "4444:4444"  # Selenium WebDriver port
+      - "7900:7900"  # noVNC port for debugging
+    environment:
+      - SE_SESSION_REQUEST_TIMEOUT=300
+      - SE_SESSION_RETRY_INTERVAL=5
+      - SE_VNC_PASSWORD=secret
+      - SE_SCREEN_WIDTH=1920
+      - SE_SCREEN_HEIGHT=1080
+    shm_size: 2gb
+    networks:
+      - selenium-grid
+
+  # Flask Application with Robot Framework
+  flask-app:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: stampcar-robot-tests
+    container_name: stampcar-flask-app
+    ports:
+      - "8080:8080"
     volumes:
       # Mount logs directory to persist test results
       - ./Logs:/app/Logs
+      - ./test-results:/app/test-results
       # Mount robots directory for easy test file access
       - ./robots:/app/robots
+      - ./resources:/app/resources
+      - ./templates:/app/templates
+      - ./static:/app/static
     environment:
-      - DISPLAY=:99
+      - FLASK_ENV=development
+      - PORT=8080
+      - HOST=0.0.0.0
       - PYTHONUNBUFFERED=1
-    # Optional: expose port if web interface is needed
-    ports:
-      - "8080:8080"
-    # Add shared memory size for Chrome stability
-    shm_size: 2gb
-    # Security options for Chrome in container
-    security_opt:
-      - seccomp:unconfined
-    # Override default command if needed
-    # command: ["python3", "run_robot.py", "--variable", "serial:4240"]
+      - SELENIUM_HUB_URL=http://selenium-chrome:4444
+      - ROBOT_FRAMEWORK_DOCKER=true
+    depends_on:
+      - selenium-chrome
+    networks:
+      - selenium-grid
+
+networks:
+  selenium-grid:
+    driver: bridge

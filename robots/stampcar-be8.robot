@@ -125,7 +125,7 @@ Initialize Test Suite
     [Documentation]    Initialize test suite with logging and environment setup
     Create Log Directory
     Detect Environment
-    Log    Test suite initialized for environment: Docker=${ENV.docker}, Local=${ENV.local}
+    Log    Test suite initialized for environment: Docker=${ENV.docker}, Selenium Grid=${ENV.selenium_grid}, Local=${ENV.local}
 
 Create Log Directory
     [Documentation]    Create the log directory if it does not exist
@@ -165,7 +165,24 @@ Capture Screen
 *** Test Cases ***
 Stamp Car on THE 9 TOWER
     [Documentation]    Test case to stamp a car on THE 9 TOWER using SeleniumLibrary.
-    Open Browser    ${CONFIG.BROWSER.URL}    ${CONFIG.BROWSER.DEFAULT}    options=${CONFIG.BROWSER.OPTIONS}
+    
+    # Get browser configuration based on environment
+    ${browser_name}=    Get Browser Name
+    ${browser_options}=    Get Browser Options
+    ${remote_url}=    Get Remote URL
+    
+    # Open browser with appropriate configuration
+    IF    "${remote_url}" != "${EMPTY}"
+        # Use Selenium Grid
+        Open Browser    ${CONFIG.BROWSER.URL}    ${browser_name}    
+        ...    remote_url=${remote_url}    options=${browser_options}
+        Log    Using Selenium Grid at: ${remote_url}
+    ELSE
+        # Use local browser
+        Open Browser    ${CONFIG.BROWSER.URL}    ${browser_name}    options=${browser_options}
+        Log    Using local browser: ${browser_name}
+    END
+    
     Maximize Browser Window
     Enter Login Credentials    ${CONFIG.USERNAME}    ${CONFIG.PASSWORD}
     Verify Login Success
