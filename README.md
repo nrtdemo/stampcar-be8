@@ -1,4 +1,4 @@
-# THE 9 TOWER E-Stamp Automat## Features
+# THE 9 TOWER E-Stamp Automation Features
 
 ### Web-Based Test Runner
 - **Modern Web Interface**: Beautiful, responsive web UI for running Robot Framework tests
