@@ -7,7 +7,8 @@ from datetime import datetime
 import glob
 
 app = Flask(__name__)
-app.secret_key = "your-secret-key-here"
+# Use environment variable for secret key in production
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "your-secret-key-here")
 
 # Global variable to store test execution status
 test_status = {
@@ -213,6 +214,9 @@ def execute_robot_test(test_type, test_value):
             f"Starting {test_type} test with value: {test_value}"
         )
 
+        # Check if running on Render (no Docker/Selenium Grid available)
+        is_render_env = os.environ.get("RENDER", False) or not os.environ.get("SELENIUM_HUB_URL")
+        
         # Prepare command based on test type using run_robot.py script
         if test_type == "license":
             cmd = [
@@ -233,10 +237,16 @@ def execute_robot_test(test_type, test_value):
         else:
             raise ValueError(f"Unknown test type: {test_type}")
 
+        # Add Render-specific environment variables
+        env = os.environ.copy()
+        if is_render_env:
+            env["RENDER_ENV"] = "true"
+            env["ROBOT_FRAMEWORK_HEADLESS"] = "true"
+            
         test_status["logs"].append(f"Executing command: {' '.join(cmd)}")
 
         # Execute the command
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=300, env=env)
 
         test_status["logs"].append(
             f"Command completed with return code: {result.returncode}"
@@ -317,6 +327,17 @@ def openfile(path):
         return "File not found"
     except Exception as e:
         return f"Failed: {str(e)}"
+
+
+@app.route("/health")
+def health_check():
+    """Health check endpoint for Render and monitoring."""
+    return jsonify({
+        "status": "healthy",
+        "timestamp": datetime.now().isoformat(),
+        "version": "1.0.0",
+        "environment": "render" if os.environ.get("RENDER_ENV") else "local"
+    })
 
 
 if __name__ == "__main__":

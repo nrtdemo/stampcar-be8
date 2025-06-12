@@ -13,3 +13,7 @@ webdriver-manager==4.0.2
 # Additional dependencies for Docker environment
 robotframework-requests==0.9.5
 robotframework-httpctrl==0.3.1
+
+# Additional dependencies for Render deployment
+chromedriver-autoinstaller==0.6.4
+pyvirtualdisplay==3.0

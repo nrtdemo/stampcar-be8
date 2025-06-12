@@ -1,0 +1,45 @@
+services:
+  # Flask Web Application
+  - name: stampcar-flask-app
+    type: web
+    runtime: python
+    plan: starter
+    region: oregon
+    repo: https://github.com/your-username/stampcar-be8.git  # Replace with your actual repo URL
+    branch: main  # Replace with your default branch if different
+    buildCommand: ./build.sh && pip install -r requirements.txt
+    startCommand: gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 main:app
+    healthCheckPath: /health
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: ROBOT_FRAMEWORK_HEADLESS
+        value: "true"
+      # Secret key for Flask sessions - generate a secure random value
+      - key: FLASK_SECRET_KEY
+        generateValue: true
+    disk:
+      name: stampcar-logs
+      mountPath: /opt/render/project/src/Logs
+      sizeGB: 5
+    # Custom domains (optional - add your domain if you have one)
+    # domains:
+    #   - your-domain.com
+    
+  # Optional: Static file service for serving test results and logs
+  - name: stampcar-static
+    type: static
+    staticPublishPath: ./Logs
+    buildCommand: echo "Static files ready"
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache
+    routes:
+      - type: rewrite
+        source: /logs/*
+        destination: /

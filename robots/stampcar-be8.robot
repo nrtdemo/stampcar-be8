@@ -4,6 +4,7 @@ Library           SeleniumLibrary
 Library           DateTime
 Library           OperatingSystem
 Resource          ../resources/docker_config.robot
+Resource          ../resources/render_config.robot
 Suite Setup       Create Log Directory
 Suite Teardown    Log Suite Status
 Test Teardown     Run Keyword If Test Failed    Handle Test Failure
@@ -168,24 +169,35 @@ Capture Screen
 Stamp Car on THE 9 TOWER
     [Documentation]    Test case to stamp a car on THE 9 TOWER using SeleniumLibrary.
     
-    # Get browser configuration based on environment
-    ${browser_name}=    Get Browser Name
-    ${browser_options}=    Get Browser Options
-    ${remote_url}=    Get Remote URL
+    # Check if running on Render
+    ${render_env}=    Get Environment Variable    RENDER_ENV    default=${EMPTY}
+    ${is_render}=    Evaluate    "${render_env}" != "${EMPTY}"
     
-    # Open browser with appropriate configuration
-    IF    "${remote_url}" != "${EMPTY}"
-        # Use Selenium Grid
-        Open Browser    ${CONFIG.BROWSER.URL}    ${browser_name}    
-        ...    remote_url=${remote_url}    options=${browser_options}
-        Log    Using Selenium Grid at: ${remote_url}
+    IF    ${is_render}
+        # Use Render-specific browser setup
+        Setup Chrome Driver For Render
+        Open Browser For Render    ${CONFIG.BROWSER.URL}
+        Log    Using Render environment with headless Chrome
     ELSE
-        # Use local browser
-        Open Browser    ${CONFIG.BROWSER.URL}    ${browser_name}    options=${browser_options}
-        Log    Using local browser: ${browser_name}
+        # Get browser configuration based on environment (Docker/Local)
+        ${browser_name}=    Get Browser Name
+        ${browser_options}=    Get Browser Options
+        ${remote_url}=    Get Remote URL
+        
+        # Open browser with appropriate configuration
+        IF    "${remote_url}" != "${EMPTY}"
+            # Use Selenium Grid
+            Open Browser    ${CONFIG.BROWSER.URL}    ${browser_name}    
+            ...    remote_url=${remote_url}    options=${browser_options}
+            Log    Using Selenium Grid at: ${remote_url}
+        ELSE
+            # Use local browser
+            Open Browser    ${CONFIG.BROWSER.URL}    ${browser_name}    options=${browser_options}
+            Log    Using local browser: ${browser_name}
+        END
+        
+        Maximize Browser Window
     END
-    
-    Maximize Browser Window
     Enter Login Credentials    ${CONFIG.USERNAME}    ${CONFIG.PASSWORD}
     Verify Login Success
     Navigate To Parking Section
