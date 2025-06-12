@@ -26,20 +26,4 @@ services:
       name: stampcar-logs
       mountPath: /opt/render/project/src/Logs
       sizeGB: 5
-    # Custom domains (optional - add your domain if you have one)
-    # domains:
-    #   - your-domain.com
-    
-  # Optional: Static file service for serving test results and logs
-  - name: stampcar-static
-    type: static
-    staticPublishPath: ./Logs
-    buildCommand: echo "Static files ready"
-    headers:
-      - path: /*
-        name: Cache-Control
-        value: no-cache
-    routes:
-      - type: rewrite
-        source: /logs/*
-        destination: /
+  
