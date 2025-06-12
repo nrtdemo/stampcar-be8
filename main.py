@@ -321,10 +321,15 @@ def openfile(path):
 
 if __name__ == "__main__":
     # Development only: run "python main.py" and open http://localhost:8080
-    # When deploying to Cloud Run or Docker, a production-grade WSGI HTTP server,
+    # When deploying to Render.com or Docker, a production-grade WSGI HTTP server,
     # such as Gunicorn, will serve the app.
     port = int(os.environ.get("PORT", 8080))
     host = os.environ.get("HOST", "0.0.0.0")
     debug = os.environ.get("FLASK_ENV") == "development"
 
+    print(f"🚀 Starting StampCar Robot Framework Test Runner")
+    print(f"🌐 Server: {host}:{port}")
+    print(f"🔧 Environment: {os.environ.get('FLASK_ENV', 'development')}")
+    print(f"📁 Working Directory: {os.getcwd()}")
+    
     app.run(host=host, port=port, debug=debug)

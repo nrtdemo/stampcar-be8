@@ -1,0 +1,27 @@
+# Render.com service configuration
+# This file can be used with render.yaml or as reference for manual setup
+
+services:
+  - type: web
+    name: stampcar-robot-framework
+    env: docker
+    region: oregon
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: ROBOT_FRAMEWORK_HEADLESS
+        value: "true"
+      - key: CHROME_ARGS
+        value: "--no-sandbox --disable-dev-shm-usage --disable-gpu --headless"
+    healthCheckPath: /
+    buildCommand: ""
+    startCommand: ""
+    disk:
+      name: logs-disk
+      mountPath: /app/Logs
+      sizeGB: 1
