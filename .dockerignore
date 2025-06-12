@@ -57,6 +57,7 @@ logs/
 *.md
 !README.md
 !DOCKER_README.md
+!RENDER_DEPLOYMENT.md
 
 # Development and local files
 .env
@@ -64,6 +65,14 @@ logs/
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Docker development files
+docker-compose*.yml
+Dockerfile.selenium
+run-selenium-grid.sh
+
+# Render deployment files (keep render.yaml)
+!render.yaml
 
 # Temporary files
 tmp/
